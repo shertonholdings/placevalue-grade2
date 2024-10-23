@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 - Place Value (Tens and Ones)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #logo img {
+            width: 150px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #number {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+        .dropzone {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            margin: 20px;
+            line-height: 100px;
+            font-size: 20px;
+            color: #999;
+            position: relative;
+        }
+        .block {
+            width: 80px;
+            height: 80px;
+            background-color: #87CEEB;
+            color: white;
+            line-height: 80px;
+            font-size: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin: 10px;
+            display: inline-block;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #countTens, #countOnes {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: lightgray;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+        }
+        #more-lessons {
+            margin-top: 40px;
+            font-size: 18px;
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        #more-lessons:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo at the top -->
+    <div id="logo">
+        <img src="https://i.imgur.com/mwpTHJj.png" alt="Logo">
+    </div>
+
+    <h1>Place Value (Tens and Ones)</h1>
+    
+    <!-- Random Number -->
+    <div id="number"></div>
+
+    <h2>Drag the correct number of blocks to the Tens and Ones</h2>
+
+    <!-- Tens and Ones Dropzones with count displays -->
+    <div class="dropzone" id="tens">Tens <div id="countTens">0</div></div>
+    <div class="dropzone" id="ones">Ones <div id="countOnes">0</div></div>
+
+    <div class="block" id="tenBlock" draggable="true" ondragstart="drag(event)">10</div>
+    <div class="block" id="oneBlock" draggable="true" ondragstart="drag(event)">1</div>
+
+    <div id="feedback"></div>
+
+    <!-- "More Lessons" button at the bottom -->
+    <a id="more-lessons" href="https://sites.google.com/view/grades-2/home">More Lessons</a>
+
+    <script>
+        let number, tensValue, onesValue, tensCount = 0, onesCount = 0;
+
+        // Generate a random two-digit number
+        function generateNumber() {
+            number = Math.floor(Math.random() * 90) + 10; // Random number between 10 and 99
+            tensValue = Math.floor(number / 10); // Extract tens place
+            onesValue = number % 10; // Extract ones place
+            document.getElementById('number').innerText = `How many tens and ones are in ${number}?`;
+            resetDropzones();
+        }
+
+        // Allow dragging
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        // Allow dropping in dropzones
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        // Handle drop event
+        function drop(ev, target) {
+            ev.preventDefault();
+            let data = ev.dataTransfer.getData("text");
+            let block = document.getElementById(data);
+
+            // Update tens or ones based on where the block was dropped
+            if (target === 'tens' && data === 'tenBlock') {
+                tensCount++;
+                document.getElementById('countTens').innerText = tensCount; // Update tens block count
+            } else if (target === 'ones' && data === 'oneBlock') {
+                onesCount++;
+                document.getElementById('countOnes').innerText = onesCount; // Update ones block count
+            }
+            checkAnswer();
+        }
+
+        // Check if the answer is correct
+        function checkAnswer() {
+            if (tensCount === tensValue && onesCount === onesValue) {
+                document.getElementById('feedback').innerText = "Great job! That's correct!";
+                document.getElementById('feedback').style.color = "green";
+
+                // Wait for 2 seconds before generating a new number
+                setTimeout(generateNumber, 2000);
+            } else if (tensCount > tensValue || onesCount > onesValue) {
+                document.getElementById('feedback').innerText = "Too many blocks! Try again.";
+                document.getElementById('feedback').style.color = "red";
+            } else {
+                document.getElementById('feedback').innerText = "Keep going!";
+                document.getElementById('feedback').style.color = "blue";
+            }
+        }
+
+        // Reset dropzones and block counts
+        function resetDropzones() {
+            tensCount = 0;
+            onesCount = 0;
+            document.getElementById('countTens').innerText = tensCount; // Reset tens count
+            document.getElementById('countOnes').innerText = onesCount; // Reset ones count
+            document.getElementById('feedback').innerText = ''; // Clear feedback
+        }
+
+        // Initialize the number on page load
+        window.onload = function() {
+            document.getElementById('tens').addEventListener('dragover', allowDrop);
+            document.getElementById('tens').addEventListener('drop', function(ev) { drop(ev, 'tens'); });
+            document.getElementById('ones').addEventListener('dragover', allowDrop);
+            document.getElementById('ones').addEventListener('drop', function(ev) { drop(ev, 'ones'); });
+            generateNumber();
+        }
+    </script>
+
+</body>
+</html>
+
